@@ -1,5 +1,11 @@
 resource "aws_s3_bucket" "raw" {
   bucket_prefix = "filingpulse-raw-sec-"
+
+  tags = {
+    Project     = "FilingPulse"
+    Environment = "dev"
+    ManagedBy   = "Terraform"
+  }
 }
 
 resource "aws_s3_bucket_public_access_block" "raw" {
