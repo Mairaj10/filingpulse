@@ -30,6 +30,16 @@ resource "aws_iam_role_policy" "filingpulse_raw_s3" {
         Effect   = "Allow"
         Action   = "s3:ListBucket"
         Resource = aws_s3_bucket.raw.arn
+      },
+      {
+        Effect = "Allow"
+
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject"
+        ]
+
+        Resource = "${aws_s3_bucket.raw.arn}/*"
       }
     ]
   })
