@@ -3,3 +3,8 @@ variable "aws_region" {
   type        = string
   default     = "us-east-1"
 }
+
+variable "snowflake_private_key_passphrase" {
+  type      = string
+  sensitive = true
+}
