@@ -90,3 +90,32 @@ resource "snowflake_grant_account_role" "ingest_role_to_dlt" {
   user_name = snowflake_service_user.dlt.name
 }
 
+resource "snowflake_schema" "raw_staging" {
+  database = snowflake_database.filingpulse.name
+  name     = "RAW_STAGING"
+  comment  = "Temporary staging schema for FilingPulse dlt merge operations"
+}
+
+resource "snowflake_grant_privileges_to_account_role" "ingest_staging_schema_usage" {
+  privileges        = ["USAGE"]
+  account_role_name = snowflake_account_role.ingest.name
+
+  on_schema {
+    schema_name = snowflake_schema.raw_staging.fully_qualified_name
+  }
+}
+
+resource "snowflake_grant_privileges_to_account_role" "ingest_staging_schema_create_table" {
+  privileges        = ["CREATE TABLE"]
+  account_role_name = snowflake_account_role.ingest.name
+
+  on_schema {
+    schema_name = snowflake_schema.raw_staging.fully_qualified_name
+  }
+}
+
+resource "snowflake_grant_account_role" "ingest_role_to_mairaj" {
+  role_name = snowflake_account_role.ingest.name
+  user_name = "MAIRAJ10"
+}
+
