@@ -3,3 +3,8 @@
 # Terraform state files
 *.tfstate
 *.tfstate.*
+# Python virtual environment
+.venv/
+# Local generated data
+data/
+__pycache__/
