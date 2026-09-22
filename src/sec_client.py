@@ -28,9 +28,9 @@ def fetch_submissions():
 
     print(f"Saved raw SEC submissions data to {output_path}")
 
-    return data
+    return data, response.content, run_timestamp
 
 if __name__ == "__main__":
-    data = fetch_submissions()
+    data, raw_bytes, run_timestamp = fetch_submissions()
     print(data["name"])
 
