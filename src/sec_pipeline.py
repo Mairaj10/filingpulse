@@ -1,5 +1,6 @@
 import hashlib
 import os
+import sys
 
 import dlt
 
@@ -12,11 +13,13 @@ from s3_storage import upload_bytes
     primary_key="accessionNumber",
     write_disposition="merge",
 )
-def submissions_resource():
-    data, raw_bytes, run_timestamp = fetch_submissions()
+def submissions_resource(cik):
+    padded_cik = str(cik).zfill(10)
+
+    data, raw_bytes, run_timestamp = fetch_submissions(cik)
 
     bucket_name = os.environ["FILINGPULSE_RAW_BUCKET"]
-    object_key = f"apple/{run_timestamp}/submissions.json"
+    object_key = f"{padded_cik}/{run_timestamp}/submissions.json"
 
     upload_bytes(
         bucket_name=bucket_name,
@@ -44,11 +47,13 @@ def submissions_resource():
     primary_key="observation_id",
     write_disposition="merge",
 )
-def companyfacts_rows():
-    data, raw_bytes, run_timestamp = fetch_companyfacts()
+def companyfacts_rows(cik):
+    padded_cik = str(cik).zfill(10)
+
+    data, raw_bytes, run_timestamp = fetch_companyfacts(cik)
 
     bucket_name = os.environ["FILINGPULSE_RAW_BUCKET"]
-    object_key = f"apple/{run_timestamp}/companyfacts.json"
+    object_key = f"{padded_cik}/{run_timestamp}/companyfacts.json"
 
     upload_bytes(
         bucket_name=bucket_name,
@@ -94,9 +99,14 @@ pipeline = dlt.pipeline(
 )
 
 if __name__ == "__main__":
-    load_info = pipeline.run([
-        submissions_resource(),
-        companyfacts_rows(),
-    ])
+    ciks = sys.argv[1:]
 
-    print(load_info)
+    for cik in ciks:
+        print(f"Processing CIK {cik}")
+
+        load_info = pipeline.run([
+            submissions_resource(cik),
+            companyfacts_rows(cik),
+        ])
+
+        print(load_info)
